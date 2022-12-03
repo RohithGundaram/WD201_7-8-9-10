@@ -1,8 +1,17 @@
 body {
     font-family: sans-serif;
-    background: rgb(81, 244, 135);
+    background: rgb(209, 209, 209);
     }
     
 .Todo-Item:hover .trash-icon{
       display:block;
+}
+
+.title{
+    display: flex;
+    justify-content: center;
+    margin: 2rem auto;
+    border: 4px solid rgb(108, 108, 108);
+    border-radius: 9px;
+    padding: 1rem;
 }
