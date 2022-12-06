@@ -1,6 +1,11 @@
-<div>
+<div class="cont">
   <h5>
-    <%= title %> <span class="bg-gray-200 text-sm font-small ml-2 px-2 py-2 mx-2 my-4 dark:text-gray-800"><%= data.length %></span>
+    <div class="inner-cont">
+      <div><%= title %></div> 
+      <div>
+        <span class="bg-gray-200 count text-sm font-small ml-2 px-2 py-2 mx-2 my-4 dark:text-gray-800"><%= data.length %></span>
+      </div>
+    </div>
   </h5>
   <ul class="list-none">
     <% for(var i = 0; i < data.length; i++) { %>

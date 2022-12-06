@@ -1,6 +1,5 @@
 const express = require("express");
 var csrf = require("tiny-csrf");
-//csrf isnt there so used tiny-csrf
 const app = express();
 const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
@@ -11,13 +10,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("This is a secret string!!!"));
 app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
-//it can be any 32 character
-
-// eslint-disable-next-line no-unused-vars
-// const {todo} = require("./models");
 
 const { Todo } = require("./models");
-
 
 app.set("view engine", "ejs");
 
@@ -43,7 +37,6 @@ app.get("/", async (request, response) => {
 });
 
 app.get("/todos", async (request, response) => {
-  // defining route to displaying message
   console.log("Todo list");
   try {
     const todoslist = await Todo.findAll();
@@ -66,13 +59,11 @@ app.get("/todos/:id", async function (request, response) {
 
 app.post("/todos", async (request, response) => {
   try {
-    // eslint-disable-next-line no-unused-vars
       await Todo.addaTodo({
       title: request.body.title,
       dueDate: request.body.dueDate,
       completed: false,
     });
-    //redirect to Main URL
     return response.redirect("/");
   } catch (err1) {
     console.log(err1);
