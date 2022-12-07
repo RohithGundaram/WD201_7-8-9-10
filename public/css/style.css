@@ -1,28 +1,9 @@
+.Todo-Item:hover .trash-icon {
+  display: block;
+}
+
 body {
-font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-background: rgb(166, 164, 164);
+  background-color: rgb(165, 165, 165);
+  font-family:sans-serif;
 }
 
-.Todo-Item:hover .trash-icon{
-  display:block;
-}
-
-.title{
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
-}
-
-.cont{
-  /* padding: 1rem; */
-  margin: 1rem 4rem;
-}
-
-.inner-cont{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.count{
-  border-radius: 9px;
-}
