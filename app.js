@@ -1,12 +1,12 @@
 const express = require("express");
 const app = express();
 var csrf = require("tiny-csrf");
-//importing cookie-parser
 var cookieParser = require("cookie-parser");
 const { Todo, User } = require("./models");
 const bodyParser = require("body-parser");
 const path = require("path");
 
+//exporting all the libraries related to level10
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const connectEnsureLogin = require("connect-ensure-login");
@@ -16,7 +16,6 @@ const LocalStratergy = require("passport-local");
 
 const saltRounds = 10;
 
-//setting up views
 app.set("views", path.join(__dirname, "views"));
 app.use(flash());
 app.use(bodyParser.json());
@@ -38,14 +37,15 @@ app.use(function (request, response, next) {
   next();
 });
 
+//initializing & session
 app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(
   new LocalStratergy(
     {
-      usernameField: "emails",
-      passwordField: "passwords",
+      usernameField: "email",
+      passwordField: "password",
     },
     (username, password, done) => {
       User.findOne({ where: { email: username } })
@@ -54,38 +54,40 @@ passport.use(
           if (result) {
             return done(null, user);
           } else {
-            return done(null, false, { message: "Password is invalid!!!" });
+            return done(null, false, { message: "Invalid Password" });
           }
         })
         .catch(() => {
-          return done(null, false, { message: "EmailID is invalid" });
+          return done(null, false, { message: "Invalid Email ID" });
         });
     }
   )
 );
 
-passport.serializeUser((user1, done) => {
-  console.log("Serialize use in session", user1.id);
-  done(null, user1.id);
+//serializing the user
+passport.serializeUser((user, done) => {
+  console.log("Serialize use in session", user.id);
+  done(null, user.id);
 });
 
-passport.deserializeUser((id1, done) => {
-  User.findByPk(id1)
+//deserializing the user
+passport.deserializeUser((id, done) => {
+  User.findByPk(id)
     .then((user) => {
       done(null, user);
     })
-    .catch((error11) => {
-      done(error11, null);
+    .catch((error) => {
+      done(error, null);
     });
 });
 
-//setting up engine
 app.set("view engine", "ejs");
+// eslint-disable-next-line no-undef
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", async function (request, response) {
   response.render("index", {
-    title: "My Todo Manager",
+    title: "The Todo Manager",
     csrfToken: request.csrfToken(),
   });
 });
@@ -113,49 +115,50 @@ app.get("/todos",
           overDue,dueToday,dueLater,completedItems,
         });
       }
-    } catch (err11111) {
-      console.log(err11111);
-      return response.status(422).json(err11111);
+    } catch (err1) {
+      console.log(err1);
+      return response.status(422).json(err1);
     }
   }
 );
 
 
-app.post("/users", async (request1, response) => {
-  if (!request1.body.firstName) {
-    request1.flash("error", "First name");
+//Route for users
+app.post("/users", async (request, response) => {
+  if (!request.body.firstName) {
+    request.flash("error", "First name");
     return response.redirect("/signup");
   }
-  if (!request1.body.email) {
-    request1.flash("error", "Email ID");
+  if (!request.body.email) {
+    request.flash("error", "Email ID");
     return response.redirect("/signup");
   }
-  if (!request1.body.password) {
-    request1.flash("error", "Password");
+  if (!request.body.password) {
+    request.flash("error", "Password");
     return response.redirect("/signup");
   }
-  if (request1.body.password < 8) {
-    request1.flash("error", "password should be minimum 8 charatcters");
+  if (request.body.password < 8) {
+    request.flash("error", "Length of password should be atleast 8 characters");
     return response.redirect("/signup");
   }
-  const hashedPwd = await bcrypt.hash(request1.body.password, saltRounds);
+  const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
   try {
     const user = await User.create({
-      firstName: request1.body.firstName,
-      lastName: request1.body.lastName,
-      email: request1.body.email,
+      firstName: request.body.firstName,
+      lastName: request.body.lastName,
+      email: request.body.email,
       password: hashedPwd,
     });
-    request1.login(user, (err11) => {
-      if (err11) {
-        console.log(err11);
+    request.login(user, (err1) => {
+      if (err1) {
+        console.log(err1);
         response.redirect("/");
       } else {
         response.redirect("/todos");
       }
     });
-  } catch (errori2) {
-    request1.flash("error", errori2.message);
+  } catch (errori) {
+    request.flash("error", errori.message);
     return response.redirect("/signup");
   }
 });
@@ -169,10 +172,10 @@ app.get("/login", (request, response) => {
 });
 
 //Route for signup
-app.get("/signup", (requests, response) => {
+app.get("/signup", (request, response) => {
   response.render("signup", {
     title: "Sign up",
-    csrfToken: requests.csrfToken(),
+    csrfToken: request.csrfToken(),
   });
 });
 
@@ -216,11 +219,11 @@ app.post("/todos",
   connectEnsureLogin.ensureLoggedIn(),
   async function (request, response) {
     if (request.body.title.length < 5) {
-      request.flash("error", "Lenght of title should be minimum 5");
+      request.flash("error", "Lenght of title should be atleast 5 characters");
       return response.redirect("/todos");
     }
     if (!request.body.dueDate) {
-      request.flash("error", "Please select a due date");
+      request.flash("error", "Select a due date");
       return response.redirect("/todos");
     }
     try {
@@ -258,7 +261,7 @@ app.put("/todos/:id",
 app.delete("/todos/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async function (req, resp) {
-    console.log("Delete todo with an id : ", req.params.id);
+    console.log("Delete a todo with a particular id : ", req.params.id);
     // FILL IN YOUR CODE HERE
     try {
       const res = await Todo.remove(req.params.id, req.user.id);

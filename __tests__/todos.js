@@ -21,7 +21,7 @@ const login = async (agent, username, password) => {
   });
 };
 
-describe("My Todo Manager", function () {
+describe("The Todo Manager", function () {
   beforeAll(async () => {
     await db.sequelize.sync({ force: true });
     server = app.listen(4000, () => {});
@@ -32,25 +32,25 @@ describe("My Todo Manager", function () {
     try {
       await db.sequelize.close();
       await server.close();
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   });
 
-  test("A test for sign up", async () => {
+  test("Test for sign up", async () => {
     let res = await agent.get("/signup");
     const csrfTokenIs = extractCsrfToken(res);
     res = await agent.post("/users").send({
-      firstName: "Test1",
-      lastName: "User1",
-      email: "user1.a@test1.com",
-      password: "12345678",
+      firstName: "testfname",
+      lastName: "testlname",
+      email: "person.@test.com",
+      password: "128534697",
       _csrf: csrfTokenIs,
     });
     expect(res.statusCode).toBe(302);
   });
 
-  test("A test for sign out", async () => {
+  test("Test for sign out", async () => {
     let response = await agent.get("/todos");
     expect(response.statusCode).toBe(200);
     response = await agent.get("/signout");
@@ -59,13 +59,13 @@ describe("My Todo Manager", function () {
     expect(response.statusCode).toBe(302);
   });
 
-  test("Tests for creating a todos", async () => {
+  test("Test for creating a todo", async () => {
     const agent = request.agent(server);
-    await login(agent, "user1.a@test.com", "12345678");
+    await login(agent, "person.@test.com", "128534697");
     const res = await agent.get("/todos");
     const csrfToken = extractCsrfToken(res);
     const response = await agent.post("/todos").send({
-      title: "To complete BEE assignment",
+      title: "To complete the assignment",
       dueDate: new Date().toISOString(),
       completed: false,
       _csrf: csrfToken,
@@ -73,13 +73,13 @@ describe("My Todo Manager", function () {
     expect(response.statusCode).toBe(302);
   });
 
-  test("A test for marking a todo as complete", async () => {
+  test("Test for marking a todo as complete", async () => {
     const agent = request.agent(server);
-    await login(agent, "user.a@test.com", "12345678");
+    await login(agent, "person.@test.com", "128534697");
     let res = await agent.get("/todos");
     let csrfToken = extractCsrfToken(res);
     await agent.post("/todos").send({
-      title: "Completed OB assignment",
+      title: "Completed the project",
       dueDate: new Date().toISOString(),
       completed: false,
       _csrf: csrfToken,
@@ -105,13 +105,13 @@ describe("My Todo Manager", function () {
     expect(parsedUpdateResponse.completed).toBe(true);
   });
 
-  test("To mark a todo as incomplete", async () => {
+  test("Mark a todo as incomplete", async () => {
     const agent = request.agent(server);
-    await login(agent, "user.a@test.com", "12345678");
+    await login(agent, "person.@test.com", "128534697");
     let res = await agent.get("/todos");
     let csrfToken = extractCsrfToken(res);
     await agent.post("/todos").send({
-      title: "To complete IPCV assignment",
+      title: "To complete the homework",
       dueDate: new Date().toISOString(),
       completed: true,
       _csrf: csrfToken,
@@ -139,11 +139,11 @@ describe("My Todo Manager", function () {
 
   test("Test for deleting a todo", async () => {
     const agent = request.agent(server);
-    await login(agent, "user.a@test.com", "12345678");
+    await login(agent, "person.@test.com", "128534697");
     let res = await agent.get("/todos");
     let csrfToken = extractCsrfToken(res);
     await agent.post("/todos").send({
-      title: "Completed OS lab Internal",
+      title: "Completed DBMS lab Internal",
       dueDate: new Date().toISOString(),
       completed: false,
       _csrf: csrfToken,
